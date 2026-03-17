@@ -305,6 +305,108 @@
     .s-body.v { opacity:1; transform:none; }
     .anim { opacity:0; transform:translateY(22px); transition:opacity .65s, transform .65s; }
     .anim.v { opacity:1; transform:none; }
+
+    /* ════════════════════════════════════════
+       RICH TRANSITION SYSTEM
+    ════════════════════════════════════════ */
+
+    /* Base */
+    [data-tx] { will-change: transform, opacity; }
+
+    /* slide from right */
+    [data-tx="slide-left"]  { opacity:0; transform:translateX(80px); transition:opacity .75s cubic-bezier(.16,1,.3,1), transform .75s cubic-bezier(.16,1,.3,1); }
+    /* slide from left */
+    [data-tx="slide-right"] { opacity:0; transform:translateX(-80px); transition:opacity .75s cubic-bezier(.16,1,.3,1), transform .75s cubic-bezier(.16,1,.3,1); }
+    /* fade up */
+    [data-tx="fade-up"]     { opacity:0; transform:translateY(55px); transition:opacity .65s cubic-bezier(.16,1,.3,1), transform .65s cubic-bezier(.16,1,.3,1); }
+    /* fade down */
+    [data-tx="fade-down"]   { opacity:0; transform:translateY(-45px); transition:opacity .65s cubic-bezier(.16,1,.3,1), transform .65s cubic-bezier(.16,1,.3,1); }
+    /* zoom */
+    [data-tx="zoom"]        { opacity:0; transform:scale(.8); transition:opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1); }
+    /* zoom + rotate */
+    [data-tx="zoom-rot"]    { opacity:0; transform:scale(.85) rotate(-5deg); transition:opacity .65s cubic-bezier(.16,1,.3,1), transform .65s cubic-bezier(.16,1,.3,1); }
+    /* 3D flip */
+    [data-tx="flip"]        { opacity:0; transform:perspective(600px) rotateX(24deg) translateY(30px); transition:opacity .65s cubic-bezier(.16,1,.3,1), transform .65s cubic-bezier(.16,1,.3,1); }
+    /* skew slide right→left */
+    [data-tx="skew-left"]   { opacity:0; transform:translateX(65px) skewX(-10deg); transition:opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1); }
+    /* skew slide left→right */
+    [data-tx="skew-right"]  { opacity:0; transform:translateX(-65px) skewX(10deg); transition:opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1); }
+    /* blur rise */
+    [data-tx="blur"]        { opacity:0; transform:translateY(22px); filter:blur(14px); transition:opacity .7s ease, transform .7s ease, filter .7s ease; }
+    /* 3D swing */
+    [data-tx="swing"]       { opacity:0; transform:perspective(800px) rotateY(32deg) translateX(40px); transition:opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+    [data-tx="swing-rev"]   { opacity:0; transform:perspective(800px) rotateY(-32deg) translateX(-40px); transition:opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+
+    /* Visible state — reset ALL transform types */
+    [data-tx].tx-v {
+      opacity: 1 !important;
+      transform: none !important;
+      filter: none !important;
+    }
+
+    /* Scroll-out: swipe away in the direction of scroll */
+    [data-tx].tx-out-up   { opacity:0 !important; transform:translateX(-55px) !important; transition:opacity .4s ease, transform .4s ease !important; }
+    [data-tx].tx-out-down { opacity:0 !important; transform:translateX(55px) !important; transition:opacity .4s ease, transform .4s ease !important; }
+
+    /* ── Page transition wipe overlay ── */
+    #page-wipe {
+      position: fixed; inset: 0; z-index: 5000;
+      pointer-events: none;
+      background: var(--red);
+      transform: scaleX(0);
+      transform-origin: left;
+    }
+    #page-wipe.wipe-in  { animation: wipeIn  .45s cubic-bezier(.77,0,.18,1) forwards; }
+    #page-wipe.wipe-out { animation: wipeOut .45s cubic-bezier(.77,0,.18,1) .15s forwards; }
+    @keyframes wipeIn  { from { transform:scaleX(0); transform-origin:left; }  to { transform:scaleX(1); transform-origin:left; } }
+    @keyframes wipeOut { from { transform:scaleX(1); transform-origin:right; } to { transform:scaleX(0); transform-origin:right; } }
+
+    /* ── Scroll progress bar ── */
+    #scroll-bar {
+      position: fixed; top: var(--nav-h); left: 0;
+      height: 2px; width: 0%;
+      background: linear-gradient(to right, var(--red-deep), var(--red), #ff7070);
+      z-index: 999;
+      box-shadow: 0 0 8px rgba(217,43,43,.65);
+      transition: width .1s linear;
+    }
+
+    /* ── Cursor glow ── */
+    #cursor-glow {
+      position: fixed; width: 340px; height: 340px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(217,43,43,.06) 0%, transparent 70%);
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: left .12s ease, top .12s ease;
+    }
+
+    /* ── Hover micro-interactions ── */
+    .rev-card { transition: opacity .6s, transform .6s, border-color .3s, box-shadow .3s !important; }
+    .rev-card:hover { transform: translateY(-6px) !important; }
+
+    .pizza-card[data-tx] { transition: opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1), border-color .3s, box-shadow .3s !important; }
+
+    .stat:hover .stat-num { color: var(--white); text-shadow: 0 0 20px rgba(217,43,43,.5); }
+
+    /* Gallery hover red sweep */
+    .g-item::before {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(135deg, transparent 0%, rgba(217,43,43,.3) 100%);
+      opacity:0; transition:opacity .4s; z-index:1;
+    }
+    .g-item:hover::before { opacity:1; }
+
+    /* Video card bottom bar on hover */
+    .vid-card::after {
+      content:''; position:absolute; bottom:0; left:0; right:0;
+      height:3px;
+      background:linear-gradient(to right, var(--red-deep), var(--red));
+      transform:scaleX(0); transform-origin:left;
+      transition:transform .4s var(--ease); z-index:2;
+    }
+    .vid-card:hover::after { transform:scaleX(1); }
+
+
     .divider {
       display:flex; align-items:center; gap:20px;
       padding:0 52px; max-width:1200px; margin:0 auto;
@@ -556,13 +658,28 @@
       font-size:.6rem; letter-spacing:.28em; color:var(--red); margin-top:2px;
     }
     .foot-copy { font-size:.7rem; color:var(--muted); margin-top:8px; }
-    .foot-links { display:flex; gap:26px; }
-    .foot-links a {
-      font-size:.68rem; font-weight:600;
-      letter-spacing:.16em; text-transform:uppercase;
-      color:var(--muted); text-decoration:none; transition:color .3s;
+    .foot-socials { display:flex; align-items:center; gap:32px; flex-wrap:wrap; }
+    .foot-social-btn {
+      display:flex; align-items:center; gap:14px;
+      text-decoration:none;
+      background:none; border:none; padding:0;
+      transition:transform .3s, opacity .3s;
     }
-    .foot-links a:hover { color:var(--red); }
+    .foot-social-btn:hover { transform:translateY(-4px); opacity:.85; }
+    .foot-social-btn img {
+      height:52px; width:auto;
+      object-fit:contain; display:block;
+      filter:brightness(.85) saturate(.75);
+      transition:filter .3s;
+    }
+    .foot-social-btn:hover img { filter:brightness(1) saturate(1); }
+    .foot-social-btn span {
+      font-family:'Bebas Neue',sans-serif;
+      font-size:.9rem; letter-spacing:.18em;
+      color:rgba(247,243,240,.5);
+      transition:color .3s; white-space:nowrap;
+    }
+    .foot-social-btn:hover span { color:var(--white); }
 
     /* ─── INNER PAGES ─── */
     .inner-wrap {
@@ -1006,6 +1123,9 @@
 <body>
 
 <div class="grain"></div>
+<div id="page-wipe"></div>
+<div id="scroll-bar"></div>
+<div id="cursor-glow"></div>
 
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" onclick="lbClose(event)">
@@ -1020,30 +1140,20 @@
     <span class="nav-brand-sub">Ahmedabad &nbsp;·&nbsp; Est. 2024</span>
   </div>
   <ul class="nav-links">
-    <li><a href="#about"    onclick="goHome()">About Us</a></li>
-    <li><a href="#gallery"  onclick="goHome()">Gallery</a></li>
-    <li><a href="#reviews"  onclick="goHome()">Reviews</a></li>
-    <li><a href="#location" onclick="goHome()">Location</a></li>
-    <li><a href="tel:06353920565">&#9742;&nbsp;063539 20565</a></li>
+    <li><a href="#about"    onclick="navTo('about')">About Us</a></li>
+    <li><a href="#gallery"  onclick="navTo('gallery')">Gallery</a></li>
+    <li><a href="#reviews"  onclick="navTo('reviews')">Reviews</a></li>
+    <li><a href="#location" onclick="navTo('location')">Location</a></li>
   </ul>
-  <div class="nav-socials">
-    <a class="nav-social-icon" href="https://www.zomato.com/ahmedabad/ciao-pizzeria-2-bopal" target="_blank" rel="noopener" title="Zomato">
-      <img src="zom.png" alt="Zomato"/>
-    </a>
-    <a class="nav-social-icon" href="https://www.instagram.com/ciaopizzeria.in/" target="_blank" rel="noopener" title="Instagram">
-      <img src="insta.png" alt="Instagram"/>
-    </a>
-  </div>
   <div class="hamburger" id="burger" onclick="toggleMenu()">
     <span></span><span></span><span></span>
   </div>
 </nav>
 <div class="mob-menu" id="mob-menu">
-  <a href="#about"    onclick="goHome();toggleMenu()">About Us</a>
-  <a href="#gallery"  onclick="goHome();toggleMenu()">Gallery</a>
-  <a href="#reviews"  onclick="goHome();toggleMenu()">Reviews</a>
-  <a href="#location" onclick="goHome();toggleMenu()">Location</a>
-  <a href="tel:06353920565">&#9742;&nbsp;063539 20565</a>
+  <a href="#about"    onclick="navTo('about');toggleMenu()">About Us</a>
+  <a href="#gallery"  onclick="navTo('gallery');toggleMenu()">Gallery</a>
+  <a href="#reviews"  onclick="navTo('reviews');toggleMenu()">Reviews</a>
+  <a href="#location" onclick="navTo('location');toggleMenu()">Location</a>
   <div style="display:flex;justify-content:center;gap:20px;padding:14px 0;">
     <a href="https://www.zomato.com/ahmedabad/ciao-pizzeria-2-bopal" target="_blank" rel="noopener"
        style="display:flex;align-items:center;gap:8px;color:rgba(247,243,240,.6);text-decoration:none;font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;">
@@ -1097,9 +1207,9 @@
   <!-- ABOUT -->
   <section id="about">
     <div>
-      <p class="s-label anim">Our Story</p>
-      <h2 class="s-title anim">WHERE ITALY MEETS<br/><em>Ahmedabad</em></h2>
-      <p class="s-body anim">
+      <p class="s-label anim" data-tx="fade-down">Our Story</p>
+      <h2 class="s-title anim" data-tx="skew-right">WHERE ITALY MEETS<br/><em>Ahmedabad</em></h2>
+      <p class="s-body anim" data-tx="slide-right">
         Born from a deep love for wood-fired traditions and the vibrant soul of Gujarat,
         Ciao Pizzeria opened its doors with one sacred promise — to serve the most
         authentic Neapolitan pizza this side of Naples. We use hand-stretched sourdough
@@ -1110,13 +1220,13 @@
         escape — loud, warm, and unapologetically delicious. Bring your appetite,
         your people, and maybe a belt with a few extra holes.
       </p>
-      <div class="about-stats anim">
+      <div class="about-stats anim" data-tx="fade-up">
         <div class="stat"><div class="stat-num">450&deg;</div><div class="stat-label">Stone Oven Temp</div></div>
         <div class="stat"><div class="stat-num">30+</div><div class="stat-label">Unique Recipes</div></div>
         <div class="stat"><div class="stat-num">1000+</div><div class="stat-label">Happy Diners</div></div>
       </div>
     </div>
-    <div class="about-img anim">
+    <div class="about-img anim" data-tx="swing">
       <div class="about-img-stack">
         <img src="ph2.png" alt="Ciao Pizzeria Interior"
              onerror="this.style.opacity='0';"/>
@@ -1131,26 +1241,26 @@
   <!-- GALLERY -->
   <section id="gallery">
     <div class="gallery-hdr">
-      <p class="s-label anim" style="text-align:center">Visual Feast</p>
-      <h2 class="s-title anim" style="text-align:center">A GLIMPSE OF <em>Ciao</em></h2>
+      <p class="s-label anim" data-tx="blur" style="text-align:center">Visual Feast</p>
+      <h2 class="s-title anim" data-tx="zoom-rot" style="text-align:center">A GLIMPSE OF <em>Ciao</em></h2>
     </div>
     <div class="g-grid">
-      <div class="g-item anim" onclick="lbOpen('ph3.jpg')">
+      <div class="g-item anim" data-tx="swing" onclick="lbOpen('ph3.jpg')">
         <img src="ph3.jpg" alt="Ciao Pizzeria"/>
       </div>
-      <div class="g-item anim" onclick="lbOpen('ph5.webp')">
+      <div class="g-item anim" data-tx="fade-up" onclick="lbOpen('ph5.webp')">
         <img src="ph5.webp" alt="Ciao Pizzeria"/>
       </div>
-      <div class="g-item anim" onclick="lbOpen('ph6.jpg')">
+      <div class="g-item anim" data-tx="zoom" onclick="lbOpen('ph6.jpg')">
         <img src="ph6.jpg" alt="Ciao Pizzeria"/>
       </div>
-      <div class="g-item anim" onclick="lbOpen('ph7.jpg')">
+      <div class="g-item anim" data-tx="skew-left" onclick="lbOpen('ph7.jpg')">
         <img src="ph7.jpg" alt="Ciao Pizzeria"/>
       </div>
-      <div class="g-item anim" onclick="lbOpen('ph8.webp')">
+      <div class="g-item anim" data-tx="swing-rev" onclick="lbOpen('ph8.webp')">
         <img src="ph8.webp" alt="Ciao Pizzeria"/>
       </div>
-      <div class="g-item anim" onclick="lbOpen('ph9.webp')">
+      <div class="g-item anim" data-tx="flip" onclick="lbOpen('ph9.webp')">
         <img src="ph9.webp" alt="Ciao Pizzeria"/>
       </div>
     </div>
@@ -1159,17 +1269,17 @@
   <!-- VIDEOS -->
   <section id="videos">
     <div class="vid-hdr">
-      <p class="s-label anim" style="text-align:center">Behind The Flame</p>
-      <h2 class="s-title anim" style="text-align:center">WATCH THE <em>Magic</em></h2>
+      <p class="s-label anim" data-tx="fade-down" style="text-align:center">Behind The Flame</p>
+      <h2 class="s-title anim" data-tx="blur" style="text-align:center">WATCH THE <em>Magic</em></h2>
     </div>
     <div class="vid-track">
-      <div class="vid-card anim">
+      <div class="vid-card anim" data-tx="skew-right">
         <video src="vid1.mp4" autoplay loop muted playsinline preload="auto"></video>
       </div>
-      <div class="vid-card anim">
+      <div class="vid-card anim" data-tx="fade-up">
         <video src="vid2.mp4" autoplay loop muted playsinline preload="auto"></video>
       </div>
-      <div class="vid-card anim">
+      <div class="vid-card anim" data-tx="skew-left">
         <video src="vid4.mp4" autoplay loop muted playsinline preload="auto"></video>
       </div>
     </div>
@@ -1179,36 +1289,36 @@
   <!-- REVIEWS -->
   <section id="reviews">
     <div class="rev-hdr">
-      <p class="s-label anim" style="text-align:center">What People Say</p>
-      <h2 class="s-title anim" style="text-align:center">HONEST <em>Opinions</em></h2>
+      <p class="s-label anim" data-tx="fade-down" style="text-align:center">What People Say</p>
+      <h2 class="s-title anim" data-tx="zoom" style="text-align:center">HONEST <em>Opinions</em></h2>
     </div>
     <div class="rev-grid">
-      <div class="rev-card anim">
+      <div class="rev-card anim" data-tx="slide-right">
         <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
         <p class="rev-text">The pizza here is criminally good. I came for one slice and ended up ordering three. Zero regrets, only carbs. My diet plan didn't survive the margherita.</p>
         <div class="rev-author"><div class="rev-av">RK</div><div><div class="rev-name">Rahul K.</div><div class="rev-date">Google Review &middot; 2024</div></div></div>
       </div>
-      <div class="rev-card anim">
+      <div class="rev-card anim" data-tx="fade-up">
         <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
         <p class="rev-text">Finally an Italian place in Ahmedabad that doesn't serve pizza with ketchup. The wood-fired crust is perfectly charred and the ambiance is pure class.</p>
         <div class="rev-author"><div class="rev-av">PS</div><div><div class="rev-name">Priya S.</div><div class="rev-date">Google Review &middot; 2024</div></div></div>
       </div>
-      <div class="rev-card anim">
+      <div class="rev-card anim" data-tx="slide-left">
         <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
         <p class="rev-text">Came here on a date and my partner liked the pizza more than me. Slightly insulted, but can't argue — the burrata was life-changing. Will return.</p>
         <div class="rev-author"><div class="rev-av">AM</div><div><div class="rev-name">Arjun M.</div><div class="rev-date">Zomato &middot; 2024</div></div></div>
       </div>
-      <div class="rev-card anim">
+      <div class="rev-card anim" data-tx="flip">
         <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</div>
         <p class="rev-text">Cozy, dark, moody — basically the aesthetic I aspire to be. The pasta alla norma was rich and deeply comforting. The tiramisu made my eyes water.</p>
         <div class="rev-author"><div class="rev-av">NP</div><div><div class="rev-name">Nisha P.</div><div class="rev-date">Zomato &middot; 2024</div></div></div>
       </div>
-      <div class="rev-card anim">
+      <div class="rev-card anim" data-tx="zoom">
         <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
         <p class="rev-text">Ordered the quattro formaggi and I have not stopped thinking about it. It's been three weeks. I may need help. Send pizza, not therapy.</p>
         <div class="rev-author"><div class="rev-av">VD</div><div><div class="rev-name">Vivek D.</div><div class="rev-date">Google Review &middot; 2024</div></div></div>
       </div>
-      <div class="rev-card anim">
+      <div class="rev-card anim" data-tx="blur">
         <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
         <p class="rev-text">Took my parents here — Mom cried, Dad asked for the recipe, and now they're planning a trip to Naples. All because of one pizza. Ciao changed my family.</p>
         <div class="rev-author"><div class="rev-av">SJ</div><div><div class="rev-name">Shreya J.</div><div class="rev-date">Instagram &middot; 2025</div></div></div>
@@ -1220,9 +1330,9 @@
   <section id="location">
     <div class="loc-inner">
       <div>
-        <p class="s-label anim">Find Us</p>
-        <h2 class="s-title anim">COME SAY <em>Ciao</em></h2>
-        <div class="loc-detail anim">
+        <p class="s-label anim" data-tx="fade-down">Find Us</p>
+        <h2 class="s-title anim" data-tx="skew-right">COME SAY <em>Ciao</em></h2>
+        <div class="loc-detail anim" data-tx="slide-right">
           <div class="loc-icon">&#128205;</div>
           <div>
             <div class="loc-lbl">Address</div>
@@ -1262,12 +1372,15 @@
       <div class="foot-copy">&copy; 2025 Ciao Pizzeria. All rights reserved.</div>
       <div class="foot-copy" style="margin-top:3px;">Made with &#127829; and way too much mozzarella.</div>
     </div>
-    <div class="foot-links">
-      <a href="#about"    onclick="goHome()">About</a>
-      <a href="#gallery"  onclick="goHome()">Gallery</a>
-      <a href="#reviews"  onclick="goHome()">Reviews</a>
-      <a href="#location" onclick="goHome()">Visit</a>
-      <a onclick="showPage('menu');return false;" href="#">Menu</a>
+    <div class="foot-socials">
+      <a class="foot-social-btn" href="https://www.zomato.com/ahmedabad/ciao-pizzeria-2-bopal" target="_blank" rel="noopener">
+        <img src="zom.png" alt="Zomato"/>
+        <span>Order on Zomato</span>
+      </a>
+      <a class="foot-social-btn" href="https://www.instagram.com/ciaopizzeria.in/" target="_blank" rel="noopener">
+        <img src="insta.png" alt="Instagram"/>
+        <span>Follow on Instagram</span>
+      </a>
     </div>
   </footer>
 </div>
@@ -1402,7 +1515,7 @@
         </button>
 
         <p style="text-align:center;margin-top:16px;font-size:.7rem;color:rgba(247,243,240,.3);line-height:1.6;">
-          A booking fee of <strong style="color:var(--red);">&#8377;1</strong> is required to confirm your table.<br/>
+          A booking fee of <strong style="color:var(--red);">&#8377;200</strong> is required to confirm your table.<br/>
           Walk-ins are always welcome too &#128521;
         </p>
 
@@ -1491,7 +1604,7 @@
         text-align:center;
       ">
         <p style="font-size:.65rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 2px;">Booking Fee</p>
-        <p style="font-family:'Bebas Neue',sans-serif;font-size:2.4rem;color:var(--red);line-height:1;margin:0;">&#8377; 1</p>
+        <p style="font-family:'Bebas Neue',sans-serif;font-size:2.4rem;color:var(--red);line-height:1;margin:0;">&#8377; 200</p>
         <p style="font-size:.65rem;color:rgba(247,243,240,.3);margin:3px 0 0;">Adjustable against your final bill</p>
       </div>
 
@@ -1613,7 +1726,7 @@
     <div class="menu-divider"></div>
 
     <!-- 1. Margherita -->
-    <div class="pizza-card" id="pc1">
+    <div class="pizza-card" data-tx="skew-right" id="pc1">
       <div class="pizza-header" onclick="togglePizza('pc1')">
         <div class="pizza-left">
           <span class="pizza-number">01 &nbsp;/&nbsp; 05</span>
@@ -1653,7 +1766,7 @@
     </div>
 
     <!-- 2. Aglio Olio -->
-    <div class="pizza-card" id="pc2">
+    <div class="pizza-card" data-tx="slide-left" id="pc2">
       <div class="pizza-header" onclick="togglePizza('pc2')">
         <div class="pizza-left">
           <span class="pizza-number">02 &nbsp;/&nbsp; 05</span>
@@ -1693,7 +1806,7 @@
     </div>
 
     <!-- 3. Quattro Formaggi -->
-    <div class="pizza-card" id="pc3">
+    <div class="pizza-card" data-tx="flip" id="pc3">
       <div class="pizza-header" onclick="togglePizza('pc3')">
         <div class="pizza-left">
           <span class="pizza-number">03 &nbsp;/&nbsp; 05</span>
@@ -1733,7 +1846,7 @@
     </div>
 
     <!-- 4. Basil Pesto -->
-    <div class="pizza-card" id="pc4">
+    <div class="pizza-card" data-tx="skew-left" id="pc4">
       <div class="pizza-header" onclick="togglePizza('pc4')">
         <div class="pizza-left">
           <span class="pizza-number">04 &nbsp;/&nbsp; 05</span>
@@ -1773,7 +1886,7 @@
     </div>
 
     <!-- 5. Truffle & Mushroom -->
-    <div class="pizza-card" id="pc5">
+    <div class="pizza-card" data-tx="zoom-rot" id="pc5">
       <div class="pizza-header" onclick="togglePizza('pc5')">
         <div class="pizza-left">
           <span class="pizza-number">05 &nbsp;/&nbsp; 05</span>
@@ -1837,19 +1950,6 @@
     });
   });
 
-  /* ─── SCROLL REVEAL ─── */
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('v'); });
-  }, { threshold: 0.08 });
-  document.querySelectorAll(
-    '.anim,.s-label,.s-title,.s-body,.about-stats,.about-img,.loc-detail,.map-box'
-  ).forEach(el => io.observe(el));
-
-  document.querySelectorAll('.rev-card').forEach((c,i)   => c.style.transitionDelay = (i*0.09)+'s');
-  document.querySelectorAll('.g-item').forEach((c,i)     => c.style.transitionDelay = (i*0.06)+'s');
-  document.querySelectorAll('.vid-card').forEach((c,i)   => c.style.transitionDelay = (i*0.1)+'s');
-  document.querySelectorAll('.loc-detail').forEach((c,i) => c.style.transitionDelay = (i*0.12)+'s');
-
   /* ─── AUTOPLAY VIDEOS ─── */
   function forcePlayVideos() {
     document.querySelectorAll('video').forEach(v => {
@@ -1895,22 +1995,6 @@
     document.querySelectorAll('.pizza-card.open').forEach(c => c.classList.remove('open'));
     // Open this one if it was closed
     if (!isOpen) card.classList.add('open');
-  }
-
-  /* ─── PAGE ROUTER ─── */
-  function showPage(id) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById('page-' + id).classList.add('active');
-    window.scrollTo({ top:0, behavior:'smooth' });
-    if (id === 'home') forcePlayVideos();
-    if (id === 'book') {
-      const d = document.getElementById('f-date');
-      if (d) d.min = new Date().toISOString().split('T')[0];
-    }
-  }
-  function goHome() {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById('page-home').classList.add('active');
   }
 
   /* ─── RESERVATION FORM SUBMIT — Step 1: validate → show QR modal ─── */
@@ -2109,38 +2193,144 @@
     });
   });
 
-  /* ─── NAV SCROLL ─── */
+  /* ══════════════════════════════════════════════
+     RICH TRANSITION ENGINE
+  ══════════════════════════════════════════════ */
+
+  /* ── Scroll progress bar ── */
   window.addEventListener('scroll', () => {
+    const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+    document.getElementById('scroll-bar').style.width = pct + '%';
     document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 50);
+  }, { passive: true });
+
+  /* ── Cursor glow ── */
+  document.addEventListener('mousemove', e => {
+    const g = document.getElementById('cursor-glow');
+    g.style.left = e.clientX + 'px';
+    g.style.top  = e.clientY + 'px';
   });
 
-  /* ─── HAMBURGER ─── */
-  function toggleMenu() {
-    document.getElementById('burger').classList.toggle('open');
-    document.getElementById('mob-menu').classList.toggle('open');
+  /* ── Direction-aware scroll observer ── */
+  let lastScrollY = window.scrollY;
+
+  const txObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const el = entry.target;
+      if (entry.isIntersecting) {
+        /* Element entering — clear out classes, add visible */
+        el.classList.remove('tx-out-up', 'tx-out-down');
+        /* Stagger based on index among siblings */
+        const siblings = Array.from(el.parentElement.querySelectorAll('[data-tx]'));
+        const idx = siblings.indexOf(el);
+        const delay = Math.min(idx * 0.08, 0.5);
+        el.style.transitionDelay = delay + 's';
+        requestAnimationFrame(() => el.classList.add('tx-v'));
+        /* Also trigger legacy .anim */
+        if (el.classList.contains('anim')) el.classList.add('v');
+      } else {
+        /* Element leaving — swipe direction based on scroll */
+        const scrollingDown = window.scrollY > lastScrollY;
+        el.classList.remove('tx-v');
+        el.style.transitionDelay = '0s';
+        if (scrollingDown) {
+          el.classList.add('tx-out-up');
+          el.classList.remove('tx-out-down');
+        } else {
+          el.classList.add('tx-out-down');
+          el.classList.remove('tx-out-up');
+        }
+        if (el.classList.contains('anim')) el.classList.remove('v');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  /* Track scroll direction */
+  window.addEventListener('scroll', () => { lastScrollY = window.scrollY; }, { passive: true });
+
+  /* Observe all [data-tx] elements */
+  function observeAll() {
+    document.querySelectorAll('[data-tx]').forEach(el => txObserver.observe(el));
+    /* Also legacy .anim without data-tx */
+    const legacyObs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('v'); });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.anim:not([data-tx])').forEach(el => legacyObs.observe(el));
+  }
+  observeAll();
+
+  /* Stagger delays for grid items */
+  document.querySelectorAll('.rev-card[data-tx]').forEach((c,i)  => c.dataset.delay = i * 0.09);
+  document.querySelectorAll('.g-item[data-tx]').forEach((c,i)    => c.dataset.delay = i * 0.07);
+  document.querySelectorAll('.vid-card[data-tx]').forEach((c,i)  => c.dataset.delay = i * 0.11);
+  document.querySelectorAll('.loc-detail[data-tx]').forEach((c,i)=> c.dataset.delay = i * 0.13);
+  document.querySelectorAll('.pizza-card[data-tx]').forEach((c,i)=> c.dataset.delay = i * 0.1);
+
+  /* ── Page wipe transition ── */
+  function wipeTo(callback) {
+    const w = document.getElementById('page-wipe');
+    w.className = '';
+    void w.offsetWidth;
+    w.classList.add('wipe-in');
+    setTimeout(() => {
+      callback();
+      w.classList.remove('wipe-in');
+      void w.offsetWidth;
+      w.classList.add('wipe-out');
+      setTimeout(() => { w.className = ''; }, 500);
+    }, 450);
   }
 
-  /* ─── SMOOTH SCROLL ─── */
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', e => {
-      const t = document.querySelector(a.getAttribute('href'));
-      if (t) { e.preventDefault(); t.scrollIntoView({ behavior:'smooth' }); }
+  /* ── PAGE ROUTER with wipe ── */
+  function showPage(id) {
+    wipeTo(() => {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + id).classList.add('active');
+      window.scrollTo({ top: 0 });
+      lastScrollY = 0;
+      /* Re-observe elements on new page */
+      setTimeout(() => observeAll(), 100);
+      if (id === 'home') forcePlayVideos();
+      if (id === 'book') {
+        const d = document.getElementById('f-date');
+        if (d) d.min = new Date().toISOString().split('T')[0];
+      }
     });
-  });
+  }
+  function goHome() {
+    wipeTo(() => {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-home').classList.add('active');
+      window.scrollTo({ top: 0 });
+      lastScrollY = 0;
+      setTimeout(() => observeAll(), 100);
+    });
+  }
 
-  /* ─── SCROLL REVEAL ─── */
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('v'); });
-  }, { threshold:0.08 });
-  document.querySelectorAll(
-    '.anim,.s-label,.s-title,.s-body,.about-stats,.about-img,.loc-detail,.map-box'
-  ).forEach(el => io.observe(el));
-
-  /* Stagger delays */
-  document.querySelectorAll('.rev-card').forEach((c,i)  => c.style.transitionDelay=(i*0.09)+'s');
-  document.querySelectorAll('.g-item').forEach((c,i)    => c.style.transitionDelay=(i*0.06)+'s');
-  document.querySelectorAll('.vid-card').forEach((c,i)  => c.style.transitionDelay=(i*0.1)+'s');
-  document.querySelectorAll('.loc-detail').forEach((c,i)=> c.style.transitionDelay=(i*0.12)+'s');
+  /* ── NAV SCROLL: works from any page ── */
+  function navTo(sectionId) {
+    const activePage = document.querySelector('.page.active');
+    if (activePage && activePage.id === 'page-home') {
+      /* Already on home — just smooth scroll */
+      const target = document.getElementById(sectionId);
+      if (target) {
+        setTimeout(() => target.scrollIntoView({ behavior: 'smooth' }), 10);
+      }
+    } else {
+      /* On another page — wipe to home then scroll */
+      wipeTo(() => {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById('page-home').classList.add('active');
+        window.scrollTo({ top: 0 });
+        lastScrollY = 0;
+        setTimeout(() => observeAll(), 100);
+        setTimeout(() => {
+          const target = document.getElementById(sectionId);
+          if (target) target.scrollIntoView({ behavior: 'smooth' });
+        }, 200);
+      });
+    }
+  }
 
   /* ─── AUTOPLAY VIDEOS ─── */
   function forcePlayVideos() {
