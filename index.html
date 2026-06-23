@@ -7,6 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700;900&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap" rel="stylesheet"/>
+  <!-- EmailJS for customer confirmation emails -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <style>
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
     :root {
@@ -1937,6 +1939,35 @@
   const OWNER_A = 'meetnimbalkar'  + '@' + 'gmail' + '.com';
   const OWNER_B = 'ky16092006'     + '@' + 'gmail' + '.com';
 
+  /* ══════════════════════════════════════════════════════════════
+     EMAILJS — customer confirmation emails
+     SETUP (5 min, free):
+     1. https://www.emailjs.com → Sign Up free
+     2. Email Services → Add Service → Gmail (ky16092006@gmail.com)
+        → copy Service ID
+     3. Email Templates → Create Template:
+        To Email  : {{to_email}}
+        Subject   : Your Ciao Pizzeria Reservation 🍕
+        Body:
+          Hello {{customer_name}},
+          Your reservation is received! We'll call you to confirm.
+          Guests: {{num_guests}} | Date: {{date}} | Time: {{time_slot}}
+          Special Requests: {{special_requests}}
+          Payment: ₹200 (Txn: {{txn_id}})
+          – Team Ciao Pizzeria, 063539 20565
+        → copy Template ID
+     4. Account → General → Public Key → copy it
+     5. Paste the three values below
+  ══════════════════════════════════════════════════════════════ */
+  const EJS_PUBLIC_KEY  = 'YOUR_EMAILJS_PUBLIC_KEY';
+  const EJS_SERVICE_ID  = 'YOUR_EMAILJS_SERVICE_ID';
+  const EJS_TEMPLATE_ID = 'YOUR_EMAILJS_TEMPLATE_ID';
+
+  (function(){
+    try { emailjs.init({ publicKey: EJS_PUBLIC_KEY }); }
+    catch(e){ console.warn('EmailJS init:', e); }
+  })();
+
   /* ─── PAGE ROUTER ─── */
     document.getElementById('burger').classList.toggle('open');
     document.getElementById('mob-menu').classList.toggle('open');
@@ -2090,49 +2121,93 @@
 
     const d = _pendingData;
     const subject  = '\uD83C\uDF55 New Reservation \u2013 ' + d.name + ' | ' + d.guests + ' guests | ' + d.dateStr;
-    const plainMsg =
-      'NEW RESERVATION \u2013 CIAO PIZZERIA\n' +
-      '--------------------------------------------\n' +
-      'Name          : ' + d.name      + '\n' +
-      'Mobile        : ' + d.mobile    + '\n' +
-      'Email         : ' + d.custEmail + '\n' +
-      'Guests        : ' + d.guests    + '\n' +
-      'Date          : ' + d.dateStr   + '\n' +
-      'Time          : ' + d.timeslot  + '\n' +
-      'Requests      : ' + d.notes     + '\n' +
-      '--------------------------------------------\n' +
-      'PAYMENT DETAILS\n' +
-      'Booking Fee   : \u20B9200\n' +
-      'Transaction ID: ' + txn          + '\n' +
-      '--------------------------------------------\n' +
-      'Please verify Transaction ID in your UPI app\n' +
-      'then call ' + d.name + ' on ' + d.mobile + ' to confirm.';
 
-    const sendTo = async (ownerEmail) => {
-      const fd = new FormData();
-      fd.append('name',      d.name);
-      fd.append('email',     d.custEmail);
-      fd.append('message',   plainMsg);
-      fd.append('_subject',  subject);
-      fd.append('_replyto',  d.custEmail);
-      fd.append('_template', 'table');
-      fd.append('_captcha',  'false');
-      const res = await fetch('https://formsubmit.co/ajax/' + ownerEmail, {
+    /* ── LOGO URL: Upload logo2.png to imgur.com and paste the direct link below ──
+       Steps: go to imgur.com → New Post → upload logo2.png → right-click image → Copy image address
+       Replace the placeholder URL below with your imgur link                        */
+    const LOGO_URL = 'https://raw.githubusercontent.com/MeetNimbalkar/ciaopizzeria/main/logo2.png';
+
+    const htmlMsg =
+      '<div style="font-family:Arial,sans-serif;max-width:580px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #eee;">' +
+
+        /* Header with logo */
+        '<div style="background:#d92b2b;padding:28px 32px;text-align:center;">' +
+          '<img src="' + LOGO_URL + '" alt="Ciao Pizzeria" style="height:70px;width:auto;object-fit:contain;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto;" onerror="this.style.display=\'none\'"/>' +
+          '<h1 style="color:#fff;margin:0;font-size:18px;letter-spacing:3px;font-family:Arial,sans-serif;">NEW TABLE RESERVATION</h1>' +
+          '<p style="color:rgba(255,255,255,.75);margin:6px 0 0;font-size:12px;letter-spacing:1px;">Submitted via Ciao Pizzeria Website</p>' +
+        '</div>' +
+
+        /* Customer details */
+        '<div style="padding:28px 32px;">' +
+          '<p style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#999;margin:0 0 16px;">CUSTOMER DETAILS</p>' +
+          '<table style="width:100%;border-collapse:collapse;font-size:14px;">' +
+            '<tr style="border-bottom:1px solid #f5f5f5;"><td style="padding:10px 0;color:#999;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;width:130px;">Name</td><td style="padding:10px 0;color:#111;font-weight:600;">' + d.name + '</td></tr>' +
+            '<tr style="border-bottom:1px solid #f5f5f5;"><td style="padding:10px 0;color:#999;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Mobile</td><td style="padding:10px 0;color:#111;">' + d.mobile + '</td></tr>' +
+            '<tr style="border-bottom:1px solid #f5f5f5;"><td style="padding:10px 0;color:#999;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Email</td><td style="padding:10px 0;color:#111;">' + d.custEmail + '</td></tr>' +
+            '<tr style="border-bottom:1px solid #f5f5f5;"><td style="padding:10px 0;color:#999;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Guests</td><td style="padding:10px 0;color:#111;">' + d.guests + '</td></tr>' +
+          '</table>' +
+
+          '<p style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#999;margin:20px 0 16px;">RESERVATION DETAILS</p>' +
+          '<table style="width:100%;border-collapse:collapse;font-size:14px;">' +
+            '<tr style="border-bottom:1px solid #f5f5f5;"><td style="padding:10px 0;color:#999;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;width:130px;">Date</td><td style="padding:10px 0;color:#d92b2b;font-weight:700;">' + d.dateStr + '</td></tr>' +
+            '<tr style="border-bottom:1px solid #f5f5f5;"><td style="padding:10px 0;color:#999;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Time Slot</td><td style="padding:10px 0;color:#d92b2b;font-weight:700;">' + d.timeslot + '</td></tr>' +
+            '<tr style="border-bottom:1px solid #f5f5f5;"><td style="padding:10px 0;color:#999;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Requests</td><td style="padding:10px 0;color:#111;">' + d.notes + '</td></tr>' +
+          '</table>' +
+
+          '<p style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#999;margin:20px 0 16px;">PAYMENT</p>' +
+          '<div style="background:#fff5f5;border-left:4px solid #d92b2b;border-radius:0 8px 8px 0;padding:14px 18px;">' +
+            '<table style="width:100%;border-collapse:collapse;font-size:14px;">' +
+              '<tr><td style="color:#999;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;width:130px;padding:4px 0;">Booking Fee</td><td style="color:#d92b2b;font-weight:700;font-size:16px;">&#8377;200</td></tr>' +
+              '<tr><td style="color:#999;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 0;">Transaction ID</td><td style="color:#111;font-weight:600;font-family:monospace;font-size:14px;">' + txn + '</td></tr>' +
+            '</table>' +
+          '</div>' +
+
+          '<div style="margin-top:22px;background:#f9f9f9;border-radius:8px;padding:14px 18px;">' +
+            '<p style="margin:0;font-size:13px;color:#555;line-height:1.6;">&#128222; Please verify Transaction ID in your UPI app, then call <strong>' + d.name + '</strong> on <strong>' + d.mobile + '</strong> to confirm the reservation.</p>' +
+          '</div>' +
+        '</div>' +
+
+        /* Footer */
+        '<div style="background:#f9f9f9;padding:16px 32px;text-align:center;border-top:1px solid #eee;">' +
+          '<p style="margin:0;font-size:11px;color:#bbb;line-height:1.8;">Ciao Pizzeria &nbsp;&middot;&nbsp; Zion Prime, Thaltej &ndash; Shilaj Rd, Ahmedabad &nbsp;&middot;&nbsp; 063539 20565</p>' +
+        '</div>' +
+
+      '</div>';
+
+    /* ── Web3Forms — individual fields render as a clean table automatically ── */
+    const W3F_KEY = '43911936-7cb1-49ff-8aaf-870e54eb402d'; // ← your key here
+
+    const sendEmail = async () => {
+      const res = await fetch('https://api.web3forms.com/submit', {
         method:  'POST',
-        headers: { 'Accept': 'application/json' },
-        body:    fd
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          access_key:         W3F_KEY,
+          subject:            subject,
+          from_name:          'Ciao Pizzeria Website',
+          replyto:            d.custEmail,
+          cc:                 OWNER_B,
+          botcheck:           '',
+          /* ── Individual fields — Web3Forms renders these as a table ── */
+          'Customer Name':    d.name,
+          'Mobile':           d.mobile,
+          'Email':            d.custEmail,
+          'No. of Guests':    d.guests,
+          'Date':             d.dateStr,
+          'Time Slot':        d.timeslot,
+          'Special Requests': d.notes,
+          'Booking Fee':      '\u20B9200',
+          'Transaction ID':   txn,
+          'Logo':             'https://raw.githubusercontent.com/MeetNimbalkar/ciaopizzeria/main/logo2.png',
+          'Action Required':  'Verify Transaction ID in UPI app, then call ' + d.name + ' on ' + d.mobile + ' to confirm.'
+        })
       });
       return res.json();
     };
 
     try {
-      const [r1, r2] = await Promise.allSettled([
-        sendTo(OWNER_A),
-        sendTo(OWNER_B)
-      ]);
-
-      const ok = (r1.status === 'fulfilled' && r1.value && r1.value.success) ||
-                 (r2.status === 'fulfilled' && r2.value && r2.value.success);
+      const data = await sendEmail();
+      const ok = data && data.success;
 
       /* Reset button */
       btn.style.pointerEvents = 'all';
@@ -2143,10 +2218,29 @@
       if (ok) {
         closeQR();
         document.getElementById('reservation-form').reset();
+
+        /* ── Send customer confirmation via EmailJS ── */
+        try {
+          await emailjs.send(EJS_SERVICE_ID, EJS_TEMPLATE_ID, {
+            to_email:         d.custEmail,
+            customer_name:    d.name,
+            num_guests:       d.guests,
+            date:             d.dateStr,
+            time_slot:        d.timeslot,
+            special_requests: d.notes,
+            txn_id:           txn,
+            mobile:           d.mobile,
+          });
+          console.log('Customer confirmation sent to:', d.custEmail);
+        } catch (ejsErr) {
+          /* EmailJS failed — owner emails still went through, just log it */
+          console.warn('Customer email failed (EmailJS not configured yet?):', ejsErr);
+        }
+
         _pendingData = null;
         showToast();
       } else {
-        console.error('r1:', r1, 'r2:', r2);
+        console.error('Web3Forms error:', data);
         showToastError();
         closeQR();
       }
